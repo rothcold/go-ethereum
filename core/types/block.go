@@ -60,7 +60,13 @@ func (n BlockNonce) MarshalText() ([]byte, error) {
 
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (n *BlockNonce) UnmarshalText(input []byte) error {
-	return hexutil.UnmarshalFixedText("BlockNonce", input, n[:])
+	nonce := make([]byte, len(input)/2-1)
+	err := hexutil.UnmarshalFixedText("BlockNonce", input, nonce[:])
+	if err != nil {
+		return err
+	}
+	*n = nonce
+	return nil
 }
 
 //go:generate go run github.com/fjl/gencodec -type Header -field-override headerMarshaling -out gen_header_json.go
